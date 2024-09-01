@@ -6,7 +6,7 @@ export default function ResultPage({ params }) {
 
   return (
     <div className="container mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Modelos de Veículos para {year}</h1>
+      <h1 className="text-2xl font-bold mb-4">Vehicle Models for {year}</h1>
       <Suspense fallback={<p>Loading models...</p>}>
         <VehicleModels makeId={makeId} year={year} />
       </Suspense>

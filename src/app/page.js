@@ -1,34 +1,32 @@
 "use client"
 import Dropdown from "@/components/DropDown";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-
+import { useQuery } from "@tanstack/react-query";
+import { useState, useMemo } from "react";
 
 export default function Home() {
-  const [vehicleTypes, setVehicleTypes] = useState([]);
   const [selectedType, setSelectedType] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
-  const [years, setYears] = useState([]);
 
-  useEffect(() => {
-    fetch('https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json')
-      .then((res) => res.json())
-      .then((data) => {
-        const options = data.Results.map((type) => ({
-          value: type.MakeId,
-          label: type.MakeName,
-        }));
-        setVehicleTypes(options);
-      });
-  }, []);
+  const { data: vehicleTypes = [] } = useQuery({
+    queryKey: ['vehicleTypes'],
+    queryFn: async () => {
+      const res = await fetch('https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json');
+      const data = await res.json();
+      return data.Results.map((type) => ({
+        value: type.MakeId,
+        label: type.MakeName,
+      }));
+    },
+  });
 
-  useEffect(() => {
+  const years = useMemo(() => {
     const currentYear = new Date().getFullYear();
     const yearOptions = [];
     for (let year = 2015; year <= currentYear; year++) {
       yearOptions.push({ value: year, label: year });
     }
-    setYears(yearOptions);
+    return yearOptions;
   }, []);
 
   return (
@@ -38,14 +36,14 @@ export default function Home() {
       </header>
 
       <Dropdown
-        label="Selecione o tipo de veículo"
+        label="Select Vehicle Type"
         options={vehicleTypes}
         selectedValue={selectedType}
         onChange={setSelectedType}
       />
 
       <Dropdown
-        label="Selecione o ano do modelo"
+        label="Select Model Year"
         options={years}
         selectedValue={selectedYear}
         onChange={setSelectedYear}

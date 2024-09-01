@@ -1,9 +1,9 @@
 export default function Dropdown({ label, options, selectedValue, onChange }) {
   return (
-    <div className="mb-4">
-      <label className="block text-gray-700 mb-2">{label}</label>
+    <div className="mb-6">
+      <label className="block text-gray-700 mb-2 font-semibold">{label}</label>
       <select
-        className="border rounded p-2 w-full"
+        className="border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border rounded-md p-2"
         value={selectedValue}
         onChange={(e) => onChange(e.target.value)}
       >

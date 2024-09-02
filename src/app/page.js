@@ -1,8 +1,8 @@
-"use client"
-import Dropdown from "@/components/DropDown";
-import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+'use client';
+import Dropdown from '@/components/DropDown';
+import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
+import { useState, useMemo } from 'react';
 
 export default function Home() {
   const [selectedType, setSelectedType] = useState('');
@@ -11,7 +11,9 @@ export default function Home() {
   const { data: vehicleTypes = [], error } = useQuery({
     queryKey: ['vehicleTypes'],
     queryFn: async () => {
-      const res = await fetch('https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json');
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/GetMakesForVehicleType/car?format=json`
+      );
       if (!res.ok) {
         throw new Error('Failed to fetch vehicle types');
       }
@@ -26,7 +28,7 @@ export default function Home() {
   const years = useMemo(() => {
     const currentYear = new Date().getFullYear();
     const yearOptions = [];
-    for (let year = 2011; year <= currentYear; year++) {
+    for (let year = 2015; year <= currentYear; year++) {
       yearOptions.push({ value: year, label: year });
     }
     return yearOptions;
@@ -35,12 +37,16 @@ export default function Home() {
   return (
     <main className="container mx-auto px-4 py-6">
       <header className="mb-8">
-        <h3 className="text-4xl font-bold text-center text-gray-800 mb-4">Car Dealer</h3>
+        <h3 className="text-4xl font-bold text-center text-gray-800 mb-4">
+          Car Dealer
+        </h3>
       </header>
 
       <div className="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
         {error && (
-          <p className="text-red-500 text-center mb-4">Failed to load vehicle types. Please try again later.</p>
+          <p className="text-red-500 text-center mb-4">
+            Failed to load vehicle types. Please try again later.
+          </p>
         )}
 
         <Dropdown
@@ -57,9 +63,21 @@ export default function Home() {
           onChange={setSelectedYear}
         />
 
-        <Link href={`/result/${selectedType}/${selectedYear}`} className={`block w-full bg-blue-600 text-white text-center py-2 rounded-lg mt-4 transition ${!selectedType || !selectedYear ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}>
+        {selectedType && selectedYear ? (
+          <Link
+            href={`/result/${selectedType}/${selectedYear}`}
+            className="block w-full bg-blue-600 text-white text-center py-2 rounded-lg mt-4 transition hover:bg-blue-700"
+          >
             Next
-        </Link>
+          </Link>
+        ) : (
+          <button
+            disabled
+            className="block w-full bg-blue-600 text-white text-center py-2 rounded-lg mt-4 opacity-50 cursor-not-allowed"
+          >
+            Next
+          </button>
+        )}
       </div>
     </main>
   );
